@@ -173,20 +173,28 @@ class DeadlockDetectorGUI:
             connectionstyle="arc3,rad=0.1"
         )
         
-        # Draw nodes with different colors based on type
-        node_colors = []
-        for node in graph.nodes():
-            if graph.nodes[node].get('type') == 'P':  # Process
-                node_colors.append('#FF9800')  # Orange
-            else:  # Resource
-                node_colors.append('#9C27B0')  # Purple
-        
+        # Draw process nodes (circles)
+        process_nodes = [node for node in graph.nodes() if graph.nodes[node].get('type') == 'P']
         nx.draw_networkx_nodes(
             graph, self.pos,
+            nodelist=process_nodes,
             ax=self.ax,
-            node_color=node_colors,
+            node_color='#FF9800',  # Orange
             node_size=1500,
-            alpha=0.9
+            alpha=0.9,
+            node_shape='o'  # Circle
+        )
+        
+        # Draw resource nodes (squares)
+        resource_nodes = [node for node in graph.nodes() if graph.nodes[node].get('type') == 'R']
+        nx.draw_networkx_nodes(
+            graph, self.pos,
+            nodelist=resource_nodes,
+            ax=self.ax,
+            node_color='#9C27B0',  # Purple
+            node_size=1500,
+            alpha=0.9,
+            node_shape='s'  # Square
         )
         
         # Draw labels
