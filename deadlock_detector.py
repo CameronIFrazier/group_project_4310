@@ -1,10 +1,10 @@
-import tkinter as tk
-from tkinter import messagebox
-import networkx as nx
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import tkinter as tk # python's gui lbrary
+from tkinter import messagebox # popup dialouges
+import networkx as nx # graph library to work with nodes, edges, and detect cytcles 
+import matplotlib.pyplot as plt # plotting library for drawing graphs
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg #integrate matplotlib graphs into tkinter windows
 from matplotlib.figure import Figure
-import random
+import random # used to generate random graphs 
 
 
 class DeadlockDetector:
@@ -23,13 +23,13 @@ class DeadlockDetector:
             tuple: (has_deadlock: bool, cycles: list of lists)
         """
         try:
-            cycles = list(nx.simple_cycles(graph))
-            has_deadlock = len(cycles) > 0
-            return has_deadlock, cycles
+            cycles = list(nx.simple_cycles(graph)) #NetworkX find all cycles in a graph 
+            has_deadlock = len(cycles) > 0 # if there are any cycles, then we have a deadlock
+            return has_deadlock, cycles #retursn true/false and list of cycles found
         except:
             return False, []
 
-
+# GUI code
 class DeadlockDetectorGUI:
     """GUI for deadlock detection with graph visualization."""
     
@@ -38,9 +38,9 @@ class DeadlockDetectorGUI:
         self.root.title("Deadlock Detection Algorithm")
         self.root.geometry("1000x700")
         
-        self.graph = None
-        self.pos = None
-        self.detector = DeadlockDetector()
+        self.graph = None #start with no graph
+        self.pos = None #store node positions
+        self.detector = DeadlockDetector() #createas an instance of the deadlock detector
         
         # Create main frame
         main_frame = tk.Frame(root)
@@ -60,7 +60,7 @@ class DeadlockDetectorGUI:
         self.randomize_btn = tk.Button(
             button_frame,
             text="Randomize Graph",
-            command=self.randomize_graph,
+            command=self.randomize_graph, #calls the main algorithm to detect deadlocks
             bg="#4CAF50",
             fg="white",
             padx=15,
@@ -72,7 +72,7 @@ class DeadlockDetectorGUI:
         self.detect_btn = tk.Button(
             button_frame,
             text="Detect Deadlock",
-            command=self.detect_deadlock,
+            command=self.detect_deadlock, #calls the main algorithm to detect deadlocks
             bg="#2196F3",
             fg="white",
             padx=15,
@@ -114,12 +114,12 @@ class DeadlockDetectorGUI:
         num_resources = num_nodes // 2
         
         # Add process nodes
-        processes = [f"P{i}" for i in range(num_processes)]
+        processes = [f"P{i}" for i in range(num_processes)] #list of all processes
         for p in processes:
             graph.add_node(p, type="P")
         
         # Add resource nodes
-        resources = [f"R{i}" for i in range(num_resources)]
+        resources = [f"R{i}" for i in range(num_resources)] #list of all resources
         for r in resources:
             graph.add_node(r, type="R")
         
@@ -129,7 +129,7 @@ class DeadlockDetectorGUI:
             num_requests = random.randint(1, 2)
             requested_resources = random.sample(resources, min(num_requests, len(resources)))
             for resource in requested_resources:
-                if random.random() < edge_probability:
+                if random.random() < edge_probability: #gives a realistic looking graph, not every node has an edge
                     graph.add_edge(process, resource)
         
         for resource in resources:
