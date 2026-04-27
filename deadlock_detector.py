@@ -124,7 +124,7 @@ class DeadlockDetectorGUI:
         for r in resources:
             graph.add_node(r, type="R")
         
-        # CREATE INTENTIONAL DEADLOCK CYCLE
+        # CREATE COMPLEX CYCLE 
         # Example: P0 → R0 → P1 → R1 → P2 → R0 (creates cycle)
         cycle_length = random.randint(3, min(num_processes, num_resources))
         for i in range(cycle_length):
