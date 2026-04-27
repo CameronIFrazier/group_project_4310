@@ -96,6 +96,7 @@ class DeadlockDetectorGUI:
     def generate_random_graph(self, num_nodes=6, edge_probability=0.3):
         """
         Generate a random directed graph representing resource allocation.
+        Intentionally creates complex deadlock cycles for educational purposes.
         
         Args:
             num_nodes: Number of nodes in the graph (even number for P and R pairs)
@@ -123,22 +124,36 @@ class DeadlockDetectorGUI:
         for r in resources:
             graph.add_node(r, type="R")
         
-        # Add edges: Process -> Resource (request) and Resource -> Process (allocation)
+        # CREATE INTENTIONAL DEADLOCK CYCLE
+        # Example: P0 → R0 → P1 → R1 → P2 → R0 (creates cycle)
+        cycle_length = random.randint(3, min(num_processes, num_resources))
+        for i in range(cycle_length):
+            process = processes[i % num_processes]
+            resource = resources[i % num_resources]
+            next_process = processes[(i + 1) % num_processes]
+            
+            # P_i requests R_i
+            graph.add_edge(process, resource)
+            # R_i is allocated to P_{i+1}
+            graph.add_edge(resource, next_process)
+        
+        # Add some additional random edges for complexity
         for process in processes:
-            # Each process requests 1-2 resources
-            num_requests = random.randint(1, 2)
-            requested_resources = random.sample(resources, min(num_requests, len(resources)))
-            for resource in requested_resources:
-                if random.random() < edge_probability: #gives a realistic looking graph, not every node has an edge
-                    graph.add_edge(process, resource)
+            # Each process may request 1-2 additional random resources
+            if random.random() < 0.6:
+                num_extra_requests = random.randint(1, 2)
+                extra_resources = random.sample(resources, min(num_extra_requests, len(resources)))
+                for resource in extra_resources:
+                    if not graph.has_edge(process, resource):  # Avoid duplicates
+                        if random.random() < edge_probability:
+                            graph.add_edge(process, resource)
         
         for resource in resources:
-            # Each resource is allocated to 0-2 processes
-            num_allocations = random.randint(0, 2)
-            allocated_processes = random.sample(processes, min(num_allocations, len(processes)))
-            for process in allocated_processes:
-                if random.random() < edge_probability:
-                    graph.add_edge(resource, process)
+            # Each resource may be allocated to 1 additional process
+            if random.random() < 0.5:
+                additional_process = random.choice(processes)
+                if not graph.has_edge(resource, additional_process):  # Avoid duplicates
+                    graph.add_edge(resource, additional_process)
         
         return graph
     
@@ -231,7 +246,7 @@ class DeadlockDetectorGUI:
         """Generate and display a new random graph."""
         self.graph = self.generate_random_graph(
             num_nodes=random.randint(6, 10),
-            edge_probability=random.uniform(0.2, 0.5)
+            edge_probability=random.uniform(0.3, 0.6)
         )
         self.draw_graph(self.graph)
         self.status_label.config(text="Status: Graph randomized", fg="#4CAF50")
