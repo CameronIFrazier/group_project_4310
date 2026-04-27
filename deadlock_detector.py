@@ -96,7 +96,7 @@ class DeadlockDetectorGUI:
     def generate_random_graph(self, num_nodes=6, edge_probability=0.3):
         """
         Generate a random directed graph representing resource allocation.
-        Intentionally creates complex deadlock cycles for educational purposes.
+        Intentionally creates complex deadlock cycles.
         
         Args:
             num_nodes: Number of nodes in the graph (even number for P and R pairs)
